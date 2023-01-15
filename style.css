@@ -28,6 +28,8 @@ h1{
 main{
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 80px;
 }
 
 .board{
@@ -42,6 +44,7 @@ main{
 .cell{
   border-right: var(--border-color) 4px solid;
   border-bottom: var(--border-color) 4px solid;
+  cursor: pointer;
 }
 
 .cell:nth-child(3n){
@@ -50,4 +53,16 @@ main{
 
 .cell:nth-child(n + 7){
   border-bottom: none;
+}
+
+.player{
+  text-align: center;
+}
+
+.player path{
+  fill:var(--text-color)
+}
+
+.player h3{
+  margin: 0;
 }
