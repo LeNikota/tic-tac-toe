@@ -1,3 +1,13 @@
+function playerFactory(name, side, id) {
+  const playerName = name;
+  const playerSide = side;
+  const playerId = id;
+  const getName = () => playerName;
+  const getSide = () => playerSide;
+  const getId = () => playerId;
+  return { getName, getSide, getId };
+}
+
 const gameBoardModule = (() => {
   const createBoard = () => ['', '', '', '', '', '', '', '', ''];
 
@@ -28,6 +38,7 @@ const gameBoardModule = (() => {
   const fillCell = (element) => {
     const index = findCell(element);
     boardArr[index] = player.getCurrentPlayerMark();
+    displayModule.render(boardArr, element);
   };
 
   const player = createPlayers();
@@ -36,8 +47,8 @@ const gameBoardModule = (() => {
 })();
 
 const displayModule = (() => {
+  const cells = document.querySelectorAll('.cell');
   const createBoard = () => {
-    const cells = document.querySelectorAll('.cell');
     cells.forEach((e) => {
       e.addEventListener('click', handleCellClick, { once: true });
     });
@@ -48,16 +59,12 @@ const displayModule = (() => {
     gameBoardModule.fillCell(index);
   };
 
-  createBoard();
-  return {};
-})();
+  const render = (boardArr) => {
+    cells.forEach((e, i) => {
+      e.textContent = boardArr[i];
+    });
+  };
 
-function playerFactory(name, side, id) {
-  const playerName = name;
-  const playerSide = side;
-  const playerId = id;
-  const getName = () => playerName;
-  const getSide = () => playerSide;
-  const getId = () => playerId;
-  return { getName, getSide, getId };
-}
+  createBoard();
+  return { render };
+})();
