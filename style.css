@@ -45,6 +45,12 @@ main{
   border-right: var(--border-color) 4px solid;
   border-bottom: var(--border-color) 4px solid;
   cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 3.6rem;
 }
 
 .cell:nth-child(3n){
