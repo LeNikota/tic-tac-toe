@@ -10,6 +10,7 @@ function playerFactory(name, side, id) {
 
 const gameBoardModule = (() => {
   const createBoard = () => ['', '', '', '', '', '', '', '', ''];
+  const getBoard = () => boardArr;
 
   const createPlayers = () => {
     const playerIdOne = document.querySelector('#player-one');
@@ -23,11 +24,12 @@ const gameBoardModule = (() => {
     };
     const getCurrentPlayerMark = () => {
       const mark = turn.getSide();
-      changePlayersTurn();
       return mark;
     };
 
-    return { one, two, getCurrentPlayerMark };
+    return {
+      one, two, getCurrentPlayerMark, changePlayersTurn,
+    };
   };
 
   const findCell = (element) => {
@@ -38,12 +40,31 @@ const gameBoardModule = (() => {
   const fillCell = (element) => {
     const index = findCell(element);
     boardArr[index] = player.getCurrentPlayerMark();
-    displayModule.render(boardArr, element);
+    if (checkWinCondition()) console.log('yeah');
+    player.changePlayersTurn();
   };
+
+  function checkWinCondition() {
+    const boardArr = gameBoardModule.getBoard();
+    const mark = player.getCurrentPlayerMark();
+    if (
+      (boardArr[0] === mark && boardArr[1] === mark && boardArr[2] === mark)
+      || (boardArr[3] === mark && boardArr[4] === mark && boardArr[5] === mark)
+      || (boardArr[6] === mark && boardArr[7] === mark && boardArr[8] === mark)
+      || (boardArr[0] === mark && boardArr[3] === mark && boardArr[6] === mark)
+      || (boardArr[1] === mark && boardArr[4] === mark && boardArr[7] === mark)
+      || (boardArr[2] === mark && boardArr[5] === mark && boardArr[8] === mark)
+      || (boardArr[0] === mark && boardArr[4] === mark && boardArr[8] === mark)
+      || (boardArr[2] === mark && boardArr[4] === mark && boardArr[6] === mark)
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   const player = createPlayers();
   const boardArr = createBoard();
-  return { fillCell, boardArr };
+  return { fillCell, getBoard };
 })();
 
 const displayModule = (() => {
@@ -57,6 +78,7 @@ const displayModule = (() => {
   const handleCellClick = (e) => {
     const index = e.target;
     gameBoardModule.fillCell(index);
+    render(gameBoardModule.getBoard());
   };
 
   const render = (boardArr) => {
@@ -66,5 +88,4 @@ const displayModule = (() => {
   };
 
   createBoard();
-  return { render };
 })();
