@@ -1,3 +1,3 @@
 # tic-tac-toe
 
-[Live preview]()
+[Live preview](https://lenikota.github.io/tic-tac-toe/)
