@@ -6,6 +6,7 @@
 :root{
   --text-color: white;
   --bg-color: #191e29;
+  --translucent-bg: #696e7980;
 /*  --border-color: #132D46; */
 /*  --border-color: #696e79; */
   --border-color: #807f7f; 
@@ -72,4 +73,58 @@ main{
 
 .player h3{
   margin: 0;
+}
+
+.fixed{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.center-vertical{
+  display: grid;
+  justify-content: center;
+  align-content: center;
+}
+
+.center-horizontal{
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+}
+
+.translucent-bg{
+  background-color: var(--translucent-bg);
+}
+
+.translucent-bg h2{
+  font-size: 3.3rem;
+}
+
+.translucent-bg span{
+  color: var(--accent);
+}
+
+button{
+  background-color: var(--accent);
+  border: none;
+  border-radius: 12px;
+  color: var(--text-color);
+
+  width: 130px;
+  height: 50px;
+  font-size: 1.3rem;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+button:hover{
+  opacity: 0.8;
+}
+
+button:active{
+  opacity: 0.6;
 }

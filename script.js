@@ -28,7 +28,10 @@ const gameBoardModule = (() => {
     };
 
     return {
-      one, two, getCurrentPlayerMark, changePlayersTurn,
+      one,
+      two,
+      getCurrentPlayerMark,
+      changePlayersTurn,
     };
   };
 
@@ -40,27 +43,47 @@ const gameBoardModule = (() => {
   const fillCell = (element) => {
     const index = findCell(element);
     boardArr[index] = player.getCurrentPlayerMark();
-    if (checkWinCondition()) console.log('yeah');
-    player.changePlayersTurn();
+    if (checkRoundOver()) {
+      roundOver();
+    } else {
+      player.changePlayersTurn();
+    }
   };
 
-  function checkWinCondition() {
+  const checkRoundOver = () => {
+    const winningConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
     const boardArr = gameBoardModule.getBoard();
     const mark = player.getCurrentPlayerMark();
-    if (
-      (boardArr[0] === mark && boardArr[1] === mark && boardArr[2] === mark)
-      || (boardArr[3] === mark && boardArr[4] === mark && boardArr[5] === mark)
-      || (boardArr[6] === mark && boardArr[7] === mark && boardArr[8] === mark)
-      || (boardArr[0] === mark && boardArr[3] === mark && boardArr[6] === mark)
-      || (boardArr[1] === mark && boardArr[4] === mark && boardArr[7] === mark)
-      || (boardArr[2] === mark && boardArr[5] === mark && boardArr[8] === mark)
-      || (boardArr[0] === mark && boardArr[4] === mark && boardArr[8] === mark)
-      || (boardArr[2] === mark && boardArr[4] === mark && boardArr[6] === mark)
-    ) {
-      return true;
+    for (let i = 0; i < winningConditions.length; i += 1) {
+      const pair = winningConditions[i];
+      if (
+        (boardArr[pair[0]] === mark
+          && boardArr[pair[1]] === mark
+          && boardArr[pair[2]] === mark)
+        || !boardArr.includes('')
+      ) {
+        return true;
+      }
     }
     return false;
-  }
+  };
+
+  const roundOver = () => {
+    if (boardArr.includes('')) {
+      windowModule.toggleWinner(player.turn);
+    } else {
+      windowModule.toggleWinner('tie');
+    }
+  };
 
   const player = createPlayers();
   const boardArr = createBoard();
@@ -88,4 +111,12 @@ const displayModule = (() => {
   };
 
   createBoard();
+})();
+
+const windowModule = (() => {
+  const toggleWinner = (sta) => {
+    const winnerDOMElement = document.querySelector('.winner-player-name');
+  };
+
+  return { toggleWinner };
 })();
