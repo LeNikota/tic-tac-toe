@@ -67,8 +67,9 @@ main{
   text-align: center;
 }
 
-.player path{
-  fill:var(--text-color)
+svg{
+  fill: var(--text-color);
+  transition: 0.4s all;
 }
 
 .player h3{
@@ -87,11 +88,14 @@ main{
   display: grid;
   justify-content: center;
   align-content: center;
+  align-items: center;
+  justify-items: center;
 }
 
 .center-horizontal{
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 60px;
 }
 
@@ -132,4 +136,41 @@ button:active{
 
 .hidden{
   display: none;
+}
+
+input[type='text']{
+  background: none;
+  border: none;
+  border-bottom: var(--text-color) 2px solid;
+  padding: 4px;
+  text-align: center;
+  caret-color: var(--accent);
+  color: var(--text-color);
+  font-size: 1.3rem;
+  max-width: 200px;
+
+  transition: 0.4s all;
+}
+
+
+input[type='text']:focus{
+  outline: none;
+  border-bottom: var(--accent) 2px solid;
+  color: var(--accent); 
+}
+
+::placeholder{
+  color: var(--text-color);
+}
+
+input[type='text']:placeholder-shown{
+  color: var(--text-color);
+}
+
+input[type='text']:not(:placeholder-shown){
+  border: none;
+}
+
+input[type='text']:focus + svg{
+  fill: var(--accent);
 }
