@@ -17,21 +17,23 @@ const gameBoardModule = (() => {
     const playerIdTwo = document.querySelector('#player-two');
     const one = playerFactory('Player 1', 'x', playerIdOne);
     const two = playerFactory('Player 2', 'o', playerIdTwo);
-    let turn = one;
+    let activePlayer = one;
 
     const changePlayersTurn = () => {
-      turn = (turn === one) ? two : one;
+      activePlayer = (activePlayer === one) ? two : one;
     };
     const getCurrentPlayerMark = () => {
-      const mark = turn.getSide();
+      const mark = activePlayer.getSide();
       return mark;
     };
+    const getHowsTurn = () => activePlayer.getName();
 
     return {
       one,
       two,
       getCurrentPlayerMark,
       changePlayersTurn,
+      getHowsTurn,
     };
   };
 
@@ -79,7 +81,7 @@ const gameBoardModule = (() => {
 
   const roundOver = () => {
     if (boardArr.includes('')) {
-      windowModule.toggleWinner(player.turn);
+      windowModule.toggleWinner(player.getHowsTurn());
     } else {
       windowModule.toggleWinner('tie');
     }
@@ -114,8 +116,18 @@ const displayModule = (() => {
 })();
 
 const windowModule = (() => {
-  const toggleWinner = (sta) => {
-    const winnerDOMElement = document.querySelector('.winner-player-name');
+  const toggleWinner = (state = 'console') => {
+    const winnerPhrase = document.querySelector('.winner-player-name .phrase');
+    const winnerState = document.querySelector('.winner-player-name .state');
+    const winnerWindow = document.querySelector('.winner');
+    if (state === 'tie') {
+      winnerPhrase.textContent = "It's a ";
+      winnerState.textContent = 'tie';
+    } else {
+      winnerPhrase.textContent = 'The winner is ';
+      winnerState.textContent = state;
+    }
+    winnerWindow.classList.toggle('hidden');
   };
 
   return { toggleWinner };

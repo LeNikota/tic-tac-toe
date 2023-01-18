@@ -101,9 +101,10 @@ main{
 
 .translucent-bg h2{
   font-size: 3.3rem;
+  text-align: center;
 }
 
-.translucent-bg span{
+.translucent-bg .state{
   color: var(--accent);
 }
 
@@ -127,4 +128,8 @@ button:hover{
 
 button:active{
   opacity: 0.6;
+}
+
+.hidden{
+  display: none;
 }
