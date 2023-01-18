@@ -198,3 +198,28 @@ const windowModule = (() => {
 
   return { toggleWinner, toggleMenu };
 })();
+
+/* ------------       The AI module         ---------------- */
+
+const AIModule = (() => {
+  const makeDecision = () => {
+    const availableCells = findAvailableCells();
+    const randomPosition = availableCells[getRandomNumber(availableCells.length)];
+    return randomPosition;
+  };
+
+  const findAvailableCells = () => {
+    const board = gameBoardModule.getBoard();
+    const availableCells = board.reduce((accumulator, element, index) => {
+      if (element === '') {
+        accumulator.push(index);
+      }
+      return accumulator;
+    }, []);
+    return availableCells;
+  };
+
+  const getRandomNumber = (max) => Math.floor(Math.random() * max);
+
+  return { makeDecision };
+})();
