@@ -6,6 +6,8 @@ function playerFactory(name, side) {
   return { getName, getSide };
 }
 
+/* ------------       The game board module         ---------------- */
+
 const gameBoardModule = (() => {
   const createBoard = () => ['', '', '', '', '', '', '', '', ''];
   const getBoard = () => boardArr;
@@ -19,11 +21,14 @@ const gameBoardModule = (() => {
 
     const changePlayersTurn = () => {
       activePlayer = (activePlayer === one) ? two : one;
+      displayModule.switchPlayersColor('switch');
     };
+
     const getCurrentPlayerMark = () => {
       const mark = activePlayer.getSide();
       return mark;
     };
+
     const getHowsTurn = () => activePlayer.getName();
 
     return {
@@ -43,14 +48,14 @@ const gameBoardModule = (() => {
   const fillCell = (element) => {
     const index = findCell(element);
     boardArr[index] = player.getCurrentPlayerMark();
-    if (checkRoundOver()) {
+    if (checkPlayerWinning() || checkDisplayFull()) {
       roundOver();
     } else {
       player.changePlayersTurn();
     }
   };
 
-  const checkRoundOver = () => {
+  const checkPlayerWinning = () => {
     const winningConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -68,7 +73,6 @@ const gameBoardModule = (() => {
         (boardArr[pair[0]] === mark
           && boardArr[pair[1]] === mark
           && boardArr[pair[2]] === mark)
-        || !boardArr.includes('')
       ) {
         return true;
       }
@@ -76,8 +80,10 @@ const gameBoardModule = (() => {
     return false;
   };
 
+  const checkDisplayFull = () => !boardArr.includes('');
+
   const roundOver = () => {
-    if (boardArr.includes('')) {
+    if (checkPlayerWinning()) {
       windowModule.toggleWinner(player.getHowsTurn());
     } else {
       windowModule.toggleWinner('tie');
@@ -87,17 +93,24 @@ const gameBoardModule = (() => {
   const init = (nameOne, nameTwo) => {
     player = createPlayers(nameOne, nameTwo);
     boardArr = createBoard();
+    displayModule.switchPlayersColor('start');
   };
 
   return { fillCell, getBoard, init };
 })();
 
+/* ------------       The game display module         ---------------- */
+
 const displayModule = (() => {
   const cells = document.querySelectorAll('.cell');
-  const createBoard = () => {
+  const playerDOMElements = document.querySelectorAll('.player');
+
+  const init = () => {
     cells.forEach((e) => {
+      e.removeEventListener('click', handleCellClick);
       e.addEventListener('click', handleCellClick, { once: true });
     });
+    render(gameBoardModule.getBoard());
   };
 
   const handleCellClick = (e) => {
@@ -106,14 +119,31 @@ const displayModule = (() => {
     render(gameBoardModule.getBoard());
   };
 
+  const switchPlayersColor = (action) => {
+    switch (action) {
+      case 'start': {
+        playerDOMElements[0].classList.add('active');
+        playerDOMElements[1].classList.remove('active');
+        break;
+      }
+      case 'switch': {
+        playerDOMElements[0].classList.toggle('active');
+        playerDOMElements[1].classList.toggle('active');
+        break;
+      }
+    }
+  };
+
   const render = (boardArr) => {
     cells.forEach((e, i) => {
       e.textContent = boardArr[i];
     });
   };
 
-  createBoard();
+  return { init, switchPlayersColor };
 })();
+
+/* ------------       The window module         ---------------- */
 
 const windowModule = (() => {
   const playerFieldOne = document.querySelector('#player-field-one');
@@ -124,10 +154,17 @@ const windowModule = (() => {
   const winnerPhrase = document.querySelector('.winner-player-name .phrase');
   const winnerState = document.querySelector('.winner-player-name .state');
   const winnerMenuBtn = document.querySelector('.winner .menu-btn');
+  const winnerNextRound = document.querySelector('.winner .next-round');
   const menu = document.querySelector('.menu');
   const menuStartBtn = document.querySelector('.menu .start-btn');
+  let nameOne;
+  let nameTwo;
 
   const toggleWinner = (state = 'console') => {
+    if (!(winnerWindow.classList.contains('hidden'))) {
+      gameBoardModule.init(nameOne, nameTwo);
+      displayModule.init();
+    }
     if (state === 'tie') {
       winnerPhrase.textContent = "It's a ";
       winnerState.textContent = 'tie';
@@ -139,11 +176,11 @@ const windowModule = (() => {
   };
 
   const toggleMenu = () => {
+    nameOne = playerInputOne.value;
+    nameTwo = playerInputTwo.value;
     if (!(winnerWindow.classList.contains('hidden'))) {
       toggleWinner();
     }
-    let nameOne = playerInputOne.value;
-    let nameTwo = playerInputTwo.value;
     if (!nameOne && !nameTwo) {
       nameOne = 'Player 1';
       nameTwo = 'Player 2';
@@ -152,10 +189,12 @@ const windowModule = (() => {
     playerFieldTwo.textContent = nameTwo;
     menu.classList.toggle('hidden');
     gameBoardModule.init(nameOne, nameTwo);
+    displayModule.init();
   };
 
   menuStartBtn.addEventListener('click', toggleMenu);
   winnerMenuBtn.addEventListener('click', toggleMenu);
+  winnerNextRound.addEventListener('click', toggleWinner);
 
   return { toggleWinner, toggleMenu };
 })();

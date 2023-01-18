@@ -65,9 +65,10 @@ main {
 
 .player {
   text-align: center;
+  transition: 0.2s all;
 }
 
-svg {!!nameOne
+svg {
   fill: var(--text-color);
   transition: 0.4s all;
 }
@@ -172,5 +173,10 @@ input[type="text"]:not(:placeholder-shown) {
 }
 
 input[type="text"]:focus + svg {
+  fill: var(--accent);
+}
+
+.active, .active path{
+  color: var(--accent);
   fill: var(--accent);
 }
