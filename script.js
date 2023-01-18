@@ -1,22 +1,20 @@
-function playerFactory(name, side, id) {
+function playerFactory(name, side) {
   const playerName = name;
   const playerSide = side;
-  const playerId = id;
   const getName = () => playerName;
   const getSide = () => playerSide;
-  const getId = () => playerId;
-  return { getName, getSide, getId };
+  return { getName, getSide };
 }
 
 const gameBoardModule = (() => {
   const createBoard = () => ['', '', '', '', '', '', '', '', ''];
   const getBoard = () => boardArr;
+  let player;
+  let boardArr;
 
-  const createPlayers = () => {
-    const playerIdOne = document.querySelector('#player-one');
-    const playerIdTwo = document.querySelector('#player-two');
-    const one = playerFactory('Player 1', 'x', playerIdOne);
-    const two = playerFactory('Player 2', 'o', playerIdTwo);
+  const createPlayers = (nameOne, nameTwo) => {
+    const one = playerFactory(nameOne, 'x');
+    const two = playerFactory(nameTwo, 'o');
     let activePlayer = one;
 
     const changePlayersTurn = () => {
@@ -63,7 +61,6 @@ const gameBoardModule = (() => {
       [0, 4, 8],
       [2, 4, 6],
     ];
-    const boardArr = gameBoardModule.getBoard();
     const mark = player.getCurrentPlayerMark();
     for (let i = 0; i < winningConditions.length; i += 1) {
       const pair = winningConditions[i];
@@ -87,9 +84,12 @@ const gameBoardModule = (() => {
     }
   };
 
-  const player = createPlayers();
-  const boardArr = createBoard();
-  return { fillCell, getBoard };
+  const init = (nameOne, nameTwo) => {
+    player = createPlayers(nameOne, nameTwo);
+    boardArr = createBoard();
+  };
+
+  return { fillCell, getBoard, init };
 })();
 
 const displayModule = (() => {
@@ -116,10 +116,18 @@ const displayModule = (() => {
 })();
 
 const windowModule = (() => {
+  const playerFieldOne = document.querySelector('#player-field-one');
+  const playerFieldTwo = document.querySelector('#player-field-two');
+  const playerInputOne = document.querySelector('#player-input-one');
+  const playerInputTwo = document.querySelector('#player-input-two');
+  const winnerWindow = document.querySelector('.winner');
+  const winnerPhrase = document.querySelector('.winner-player-name .phrase');
+  const winnerState = document.querySelector('.winner-player-name .state');
+  const winnerMenuBtn = document.querySelector('.winner .menu-btn');
+  const menu = document.querySelector('.menu');
+  const menuStartBtn = document.querySelector('.menu .start-btn');
+
   const toggleWinner = (state = 'console') => {
-    const winnerPhrase = document.querySelector('.winner-player-name .phrase');
-    const winnerState = document.querySelector('.winner-player-name .state');
-    const winnerWindow = document.querySelector('.winner');
     if (state === 'tie') {
       winnerPhrase.textContent = "It's a ";
       winnerState.textContent = 'tie';
@@ -130,5 +138,24 @@ const windowModule = (() => {
     winnerWindow.classList.toggle('hidden');
   };
 
-  return { toggleWinner };
+  const toggleMenu = () => {
+    if (!(winnerWindow.classList.contains('hidden'))) {
+      toggleWinner();
+    }
+    let nameOne = playerInputOne.value;
+    let nameTwo = playerInputTwo.value;
+    if (!nameOne && !nameTwo) {
+      nameOne = 'Player 1';
+      nameTwo = 'Player 2';
+    }
+    playerFieldOne.textContent = nameOne;
+    playerFieldTwo.textContent = nameTwo;
+    menu.classList.toggle('hidden');
+    gameBoardModule.init(nameOne, nameTwo);
+  };
+
+  menuStartBtn.addEventListener('click', toggleMenu);
+  winnerMenuBtn.addEventListener('click', toggleMenu);
+
+  return { toggleWinner, toggleMenu };
 })();
