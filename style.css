@@ -3,37 +3,37 @@
   src: url("./Lato-Regular.ttf");
 }
 
-:root{
+:root {
   --text-color: white;
   --bg-color: #191e29;
   --translucent-bg: #696e7980;
-/*  --border-color: #132D46; */
-/*  --border-color: #696e79; */
-  --border-color: #807f7f; 
-  --accent:#01ce8d;
+  /*  --border-color: #132D46; */
+  /*  --border-color: #696e79; */
+  --border-color: #807f7f;
+  --accent: #01ce8d;
 }
 
-body{
+body {
   margin: 0;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
 
-h1{
+h1 {
   text-align: center;
   font-size: 2.5rem;
   user-select: none;
 }
 
-main{
+main {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 80px;
 }
 
-.board{
+.board {
   width: 400px;
   height: 400px;
   margin: 3rem 0;
@@ -42,7 +42,7 @@ main{
   grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
 }
 
-.cell{
+.cell {
   border-right: var(--border-color) 4px solid;
   border-bottom: var(--border-color) 4px solid;
   cursor: pointer;
@@ -55,29 +55,29 @@ main{
   user-select: none;
 }
 
-.cell:nth-child(3n){
+.cell:nth-child(3n) {
   border-right: none;
 }
 
-.cell:nth-child(n + 7){
+.cell:nth-child(n + 7) {
   border-bottom: none;
 }
 
-.player{
+.player {
   text-align: center;
 }
 
-svg{
+svg {!!nameOne
   fill: var(--text-color);
   transition: 0.4s all;
 }
 
-.player h3{
+.player h3 {
   margin: 0;
   font-weight: 100;
 }
 
-.fixed{
+.fixed {
   position: fixed;
   top: 0;
   left: 0;
@@ -85,7 +85,7 @@ svg{
   height: 100vh;
 }
 
-.center-vertical{
+.center-vertical {
   display: grid;
   justify-content: center;
   align-content: center;
@@ -93,27 +93,27 @@ svg{
   justify-items: center;
 }
 
-.center-horizontal{
+.center-horizontal {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 60px;
 }
 
-.translucent-bg{
+.translucent-bg {
   background-color: var(--translucent-bg);
 }
 
-.translucent-bg h2{
+.translucent-bg h2 {
   font-size: 3.3rem;
   text-align: center;
 }
 
-.translucent-bg .state{
+.translucent-bg .state {
   color: var(--accent);
 }
 
-button{
+button {
   background-color: var(--accent);
   border: none;
   border-radius: 12px;
@@ -127,19 +127,19 @@ button{
   cursor: pointer;
 }
 
-button:hover{
+button:hover {
   opacity: 0.8;
 }
 
-button:active{
+button:active {
   opacity: 0.6;
 }
 
-.hidden{
+.hidden {
   display: none;
 }
 
-input[type='text']{
+input[type="text"] {
   background: none;
   border: none;
   border-bottom: var(--text-color) 2px solid;
@@ -153,25 +153,24 @@ input[type='text']{
   transition: 0.4s all;
 }
 
-
-input[type='text']:focus{
+input[type="text"]:focus {
   outline: none;
   border-bottom: var(--accent) 2px solid;
-  color: var(--accent); 
+  color: var(--accent);
 }
 
-::placeholder{
+::placeholder {
   color: var(--text-color);
 }
 
-input[type='text']:placeholder-shown{
+input[type="text"]:placeholder-shown {
   color: var(--text-color);
 }
 
-input[type='text']:not(:placeholder-shown){
+input[type="text"]:not(:placeholder-shown) {
   border: none;
 }
 
-input[type='text']:focus + svg{
+input[type="text"]:focus + svg {
   fill: var(--accent);
 }
