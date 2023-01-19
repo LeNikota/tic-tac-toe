@@ -90,6 +90,8 @@ const gameBoardModule = (() => {
     }
   };
 
+  const simulateClick = () => console.log('click'); // Make it happen
+
   const init = (nameOne, nameTwo) => {
     player = createPlayers(nameOne, nameTwo);
     boardArr = createBoard();
@@ -221,5 +223,22 @@ const AIModule = (() => {
 
   const getRandomNumber = (max) => Math.floor(Math.random() * max);
 
-  return { makeDecision };
+  const minimax = (board) => 1;
+
+  const bestMove = () => {
+    const board = gameBoardModule.getBoard();
+    let bestScore = -Infinity;
+    let bestMovePosition;
+    const availableCells = findAvailableCells();
+    availableCells.forEach((index) => {
+      board[index] = 'o';
+      const score = minimax(board);
+      board[index] = '';
+      if (score > bestScore) {
+        bestScore = score;
+        bestMovePosition = index;
+      }
+    });
+    displayModule.simulateClick(bestMovePosition);
+  };
 })();
