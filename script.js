@@ -10,7 +10,7 @@ function playerFactory(name, side) {
 
 const gameBoardModule = (() => {
   const createBoard = () => ['', '', '', '', '', '', '', '', ''];
-  const getBoard = () => boardArr;
+  const getBoard = () => [...boardArr];
   let player;
   let boardArr;
 
@@ -40,13 +40,18 @@ const gameBoardModule = (() => {
     };
   };
 
-  const findCell = (element) => {
+  const findCellByIndex = (index) => {
+    const cellsArr = Array.from(document.querySelectorAll('.cell'));
+    return cellsArr[index];
+  };
+
+  const findCellByElement = (element) => {
     const cellsArr = Array.from(document.querySelectorAll('.cell'));
     return cellsArr.indexOf(element);
   };
 
   const fillCell = (element) => {
-    const index = findCell(element);
+    const index = findCellByElement(element);
     boardArr[index] = player.getCurrentPlayerMark();
     if (checkPlayerWinning() || checkDisplayFull()) {
       roundOver();
@@ -55,7 +60,14 @@ const gameBoardModule = (() => {
     }
   };
 
-  const checkPlayerWinning = () => {
+  const checkPlayerWinning = (providedBoard, playerMark) => {
+    let board = boardArr;
+    let mark = player.getCurrentPlayerMark();
+    if (providedBoard != null && playerMark != null) {
+      board = providedBoard;
+      mark = playerMark;
+    }
+
     const winningConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -66,13 +78,12 @@ const gameBoardModule = (() => {
       [0, 4, 8],
       [2, 4, 6],
     ];
-    const mark = player.getCurrentPlayerMark();
     for (let i = 0; i < winningConditions.length; i += 1) {
       const pair = winningConditions[i];
       if (
-        (boardArr[pair[0]] === mark
-          && boardArr[pair[1]] === mark
-          && boardArr[pair[2]] === mark)
+        (board[pair[0]] === mark
+          && board[pair[1]] === mark
+          && board[pair[2]] === mark)
       ) {
         return true;
       }
@@ -80,7 +91,12 @@ const gameBoardModule = (() => {
     return false;
   };
 
-  const checkDisplayFull = () => !boardArr.includes('');
+  const checkDisplayFull = (board) => {
+    if (board != null) {
+      return !board.includes('');
+    }
+    return !boardArr.includes('');
+  };
 
   const roundOver = () => {
     if (checkPlayerWinning()) {
@@ -90,15 +106,15 @@ const gameBoardModule = (() => {
     }
   };
 
-  const simulateClick = () => console.log('click'); // Make it happen
-
   const init = (nameOne, nameTwo) => {
     player = createPlayers(nameOne, nameTwo);
     boardArr = createBoard();
     displayModule.switchPlayersColor('start');
   };
 
-  return { fillCell, getBoard, init };
+  return {
+    fillCell, findCellByIndex, getBoard, checkPlayerWinning, checkDisplayFull, init,
+  };
 })();
 
 /* ------------       The game display module         ---------------- */
@@ -142,7 +158,12 @@ const displayModule = (() => {
     });
   };
 
-  return { init, switchPlayersColor };
+  const simulateClick = (index) => {
+    const element = gameBoardModule.findCellByIndex(index);
+    element.click();
+  };
+
+  return { init, switchPlayersColor, simulateClick };
 })();
 
 /* ------------       The window module         ---------------- */
@@ -204,14 +225,49 @@ const windowModule = (() => {
 /* ------------       The AI module         ---------------- */
 
 const AIModule = (() => {
-  const makeDecision = () => {
+  const howsWinning = (board) => {
+    const marks = ['x', 'o'];
+    const winningConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    for (let i = 0; i < marks.length; i += 1) {
+      const mark = marks[i];
+      for (let j = 0; j < winningConditions.length; j += 1) {
+        const pair = winningConditions[j];
+        if (
+          (board[pair[0]] === mark
+            && board[pair[1]] === mark
+            && board[pair[2]] === mark)
+        ) {
+          return mark;
+        }
+      }
+    }
+    if (!board.includes('')) return 'tie';
+    return null;
+  };
+
+  const getRandomNumber = (max) => Math.floor(Math.random() * max);
+
+  const getAIDecision = () => {
     const availableCells = findAvailableCells();
     const randomPosition = availableCells[getRandomNumber(availableCells.length)];
     return randomPosition;
   };
 
-  const findAvailableCells = () => {
-    const board = gameBoardModule.getBoard();
+  const findAvailableCells = (providedBoard) => {
+    let board = gameBoardModule.getBoard();
+    if (providedBoard != null) {
+      board = providedBoard;
+    }
     const availableCells = board.reduce((accumulator, element, index) => {
       if (element === '') {
         accumulator.push(index);
@@ -221,24 +277,52 @@ const AIModule = (() => {
     return availableCells;
   };
 
-  const getRandomNumber = (max) => Math.floor(Math.random() * max);
+  const minimax = (providedBoard, isMaximizing) => {
+    const board = [...providedBoard];
+    const scores = {
+      x: 1,
+      o: -1,
+      tie: 0,
+    };
+    const result = howsWinning(board);
+    if (result) {
+      return scores[result];
+    }
 
-  const minimax = (board) => 1;
-
-  const bestMove = () => {
-    const board = gameBoardModule.getBoard();
-    let bestScore = -Infinity;
-    let bestMovePosition;
-    const availableCells = findAvailableCells();
+    const availableCells = findAvailableCells(board);
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      availableCells.forEach((index) => {
+        board[index] = 'x';
+        const score = minimax(board, false);
+        bestScore = Math.max(score, bestScore);
+      });
+      return bestScore;
+    }
+    let bestScore = Infinity;
     availableCells.forEach((index) => {
       board[index] = 'o';
-      const score = minimax(board);
-      board[index] = '';
+      const score = minimax(board, true);
+      bestScore = Math.min(score, bestScore);
+    });
+    return bestScore;
+  };
+
+  const getBestMove = () => {
+    let bestScore = -Infinity;
+    let bestMove;
+    const availableCells = findAvailableCells();
+    availableCells.forEach((index) => {
+      const board = gameBoardModule.getBoard();
+      board[index] = 'x';
+      const score = minimax(board, false);
       if (score > bestScore) {
         bestScore = score;
-        bestMovePosition = index;
+        bestMove = index;
       }
     });
-    displayModule.simulateClick(bestMovePosition);
+    return bestMove;
   };
+
+  return { getBestMove, getAIDecision };
 })();
