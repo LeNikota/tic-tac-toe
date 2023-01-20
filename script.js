@@ -11,8 +11,13 @@ function playerFactory(name, side) {
 const gameBoardModule = (() => {
   const createBoard = () => ['', '', '', '', '', '', '', '', ''];
   const getBoard = () => [...boardArr];
+  const changeOpponentPlayer = (e) => {
+    opponentPlayer = e.target.value;
+  };
   let player;
   let boardArr;
+  let opponentPlayer = 'human';
+  let AIturn = false;
 
   const createPlayers = (nameOne, nameTwo) => {
     const one = playerFactory(nameOne, 'x');
@@ -21,7 +26,23 @@ const gameBoardModule = (() => {
 
     const changePlayersTurn = () => {
       activePlayer = (activePlayer === one) ? two : one;
-      displayModule.switchPlayersColor('switch');
+      if (AIturn) {
+        AIturn = false;
+        return;
+      }
+      switch (opponentPlayer) {
+        case 'human':
+          displayModule.switchPlayersColor('switch');
+          break;
+        case 'random':
+          AIturn = true;
+          displayModule.simulateClick(AIModule.getRandomDecision());
+          break;
+        case 'casual':
+          AIturn = true;
+          displayModule.simulateClick(AIModule.getBestMove());
+          break;
+      }
     };
 
     const getCurrentPlayerMark = () => {
@@ -113,7 +134,13 @@ const gameBoardModule = (() => {
   };
 
   return {
-    fillCell, findCellByIndex, getBoard, checkPlayerWinning, checkDisplayFull, init,
+    fillCell,
+    findCellByIndex,
+    getBoard,
+    checkPlayerWinning,
+    checkDisplayFull,
+    init,
+    changeOpponentPlayer,
   };
 })();
 
@@ -180,6 +207,7 @@ const windowModule = (() => {
   const winnerNextRound = document.querySelector('.winner .next-round');
   const menu = document.querySelector('.menu');
   const menuStartBtn = document.querySelector('.menu .start-btn');
+  const secondPlayer = document.querySelectorAll('.second-player');
   let nameOne;
   let nameTwo;
 
@@ -218,6 +246,9 @@ const windowModule = (() => {
   menuStartBtn.addEventListener('click', toggleMenu);
   winnerMenuBtn.addEventListener('click', toggleMenu);
   winnerNextRound.addEventListener('click', toggleWinner);
+  secondPlayer.forEach((e) => {
+    e.addEventListener('click', gameBoardModule.changeOpponentPlayer);
+  });
 
   return { toggleWinner, toggleMenu };
 })();
@@ -257,7 +288,7 @@ const AIModule = (() => {
 
   const getRandomNumber = (max) => Math.floor(Math.random() * max);
 
-  const getAIDecision = () => {
+  const getRandomDecision = () => {
     const availableCells = findAvailableCells();
     const randomPosition = availableCells[getRandomNumber(availableCells.length)];
     return randomPosition;
@@ -324,5 +355,5 @@ const AIModule = (() => {
     return bestMove;
   };
 
-  return { getBestMove, getAIDecision };
+  return { getBestMove, getRandomDecision };
 })();
